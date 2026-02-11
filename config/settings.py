@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,6 +24,8 @@ ALLOWED_HOSTS = ['*']
 
 THIRD_PART_APPS = [
     'rest_framework',
+    'django_filters',
+    'rest_framework_simplejwt',
 ]
 
 LOCAL_APPS = [
@@ -134,9 +137,12 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
     ],
 
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
@@ -147,3 +153,11 @@ REST_FRAMEWORK = {
 
 # admin
 # med_pass_123
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
+    'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
+}
