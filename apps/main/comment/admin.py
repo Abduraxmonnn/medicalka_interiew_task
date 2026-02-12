@@ -12,6 +12,7 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "get_author_username",
+        "content",
         "get_post_title",
         "created_at",
     ]
@@ -19,7 +20,7 @@ class CommentAdmin(admin.ModelAdmin):
     readonly_fields = ["id", "created_at"]
 
     def get_author_username(self, obj):
-        return obj.user_id.username
+        return obj.author_id.username
 
     def get_post_title(self, obj):
         return obj.post_id.title

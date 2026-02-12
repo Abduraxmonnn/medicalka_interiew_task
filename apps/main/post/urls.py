@@ -1,5 +1,4 @@
 # Django
-from django.urls import path, include
 from rest_framework import routers
 
 # Project
@@ -10,5 +9,7 @@ router.register(r'', PostListOrCreateViewSet, basename='post_list_create')
 router.register(r'', PostDetailUpdateDestroyViewSet, basename='post_detail_update_delete')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    # path('<uuid:post_id>/comment/', include('apps.main.comment.urls')),
 ]
+
+urlpatterns += router.urls

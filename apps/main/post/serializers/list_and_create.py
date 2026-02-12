@@ -6,6 +6,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 # Project
+from apps.main.comment.serializers.list import CommentListSerializer
 from apps.main.post.models import Post
 
 User = get_user_model()
@@ -14,6 +15,7 @@ User = get_user_model()
 class PostListOrCreateSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     author_username = serializers.CharField(write_only=True)
+    comments = CommentListSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post

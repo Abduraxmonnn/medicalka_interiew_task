@@ -6,7 +6,7 @@ from rest_framework.mixins import RetrieveModelMixin, DestroyModelMixin, UpdateM
 # Project
 from apps.main.post.models import Post
 from apps.main.post.serializers.detail_update_delete import PostDetailUpdateDestroySerializer
-from apps.permissions.is_author_permission import IsPostAuthor
+from apps.permissions.is_author_permission import IsAuthorOrReadOnly
 
 
 class PostDetailUpdateDestroyViewSet(RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin, GenericViewSet):
@@ -16,6 +16,6 @@ class PostDetailUpdateDestroyViewSet(RetrieveModelMixin, DestroyModelMixin, Upda
 
     def get_permissions(self):
         if self.action in ['update', 'partial_update', 'destroy']:
-            return [IsAuthenticated(), IsPostAuthor()]
+            return [IsAuthenticated(), IsAuthorOrReadOnly()]
 
         return [IsAuthenticated()]
