@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:14-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: medicalka_db_prod
+      POSTGRES_USER: medicalka_user_prod
+      POSTGRES_PASSWORD: medicalka_12345_prod
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "python manage.py migrate && gunicorn medicalka_app.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - static_volume:/web/medicalka_app/django_static
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A medicalka_app worker -l info
+    volumes:
+      - static_volume:/web/medicalka_app/django_static
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - web
+
+volumes:
+  static_volume: { }
+  postgres_data: { }
