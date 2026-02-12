@@ -10,7 +10,7 @@ from apps.user.models import User
 
 class Comment(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
-    post_id = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True)
+    post_id = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True, related_name='comments')
     author_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     content = models.TextField(max_length=2_000)
 

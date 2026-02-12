@@ -1,15 +1,15 @@
 # Django
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 # Project
 from apps.user.models import User
 
 
 @admin.register(User)
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(admin.ModelAdmin):
     ordering = ["username"]
     list_display = [
+        "id",
         "username",
         "email",
         "full_name",

@@ -1,0 +1,2 @@
+from apps.main.post.api.detail_update_delete import PostDetailUpdateDestroyViewSet
+from apps.main.post.api.list_and_create import PostListOrCreateViewSet
