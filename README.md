@@ -2,6 +2,14 @@
 
 Backend API project built with Django REST Framework, PostgreSQL, Celery, and Redis.
 
+![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-6-092E20?logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-API-red?logo=django&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-4169E1?logo=postgresql&logoColor=white)
+![Celery](https://img.shields.io/badge/Celery-Tasks-37814A?logo=celery&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-Queue-DC382D?logo=redis&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+
 ## Tech Stack
 - Python 3.12+
 - Django 6
@@ -100,6 +108,17 @@ python manage.py runserver
 celery -A config.celery:app worker -l info
 celery -A config.celery:app beat -l info
 ```
+
+## Background Cleanup Schedule (Celery Beat)
+These tasks run automatically to keep the database clean.
+
+- Timezone: `Asia/Tashkent`
+- Unverified users cleanup
+  - Task: `apps.user.tasks.delete_expired_users_task`
+  - Runs: every Sunday at `00:00`
+- Old posts cleanup
+  - Task: `apps.main.post.tasks.delete_expired_posts_task`
+  - Runs: every `30` days
 
 ## Docker Setup
 
@@ -202,3 +221,7 @@ docker compose run --rm web python manage.py test
   - Reinstall dependencies: `pip install -r requirements.txt`
   - Confirm package exists: `pip show python-dotenv`
   - Then rerun worker command.
+
+## AI Attribution
+- This `README.md` was fully created by AI but has undergone a thorough author check.
+- Docker-related parts were created by the project author with partial AI assistance because Time was deficit.
