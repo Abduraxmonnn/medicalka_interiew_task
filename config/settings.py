@@ -1,3 +1,6 @@
+# admin
+# med_pass_123
+
 import os
 import sys
 from pathlib import Path
@@ -177,8 +180,18 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
 }
 
-# admin
-# med_pass_123
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+# Email credentials from environment variables
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')  # your Gmail email
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # your Gmail password or app password
+
+# Default sender email
+EMAIL_FROM = os.environ.get('EMAIL_FROM', EMAIL_HOST_USER)
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),

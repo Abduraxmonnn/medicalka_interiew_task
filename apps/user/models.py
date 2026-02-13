@@ -4,8 +4,6 @@ import uuid
 # Django
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-from django.contrib.auth.hashers import make_password, check_password
-from django.contrib.auth.password_validation import validate_password
 from django.core.validators import MinLengthValidator
 
 # Project
@@ -20,8 +18,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     password = models.CharField(max_length=128)
 
+    otp_code = models.IntegerField(blank=True, null=True)
+
     is_verified = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)

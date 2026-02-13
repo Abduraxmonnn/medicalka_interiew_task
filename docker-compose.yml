@@ -5,9 +5,9 @@ services:
     image: postgres:14-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: medicalka_db_prod
-      POSTGRES_USER: medicalka_user_prod
-      POSTGRES_PASSWORD: medicalka_12345_prod
+      POSTGRES_DB: medicalka_db
+      POSTGRES_USER: medicalka_user
+      POSTGRES_PASSWORD: medicalka_123
     ports:
       - "5432:5432"
     volumes:

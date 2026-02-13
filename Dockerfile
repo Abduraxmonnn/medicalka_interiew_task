@@ -4,14 +4,20 @@ FROM python:3.11-alpine
 # Install build essentials and development libraries.
 # Added the installation of build-base, libffi-dev, and openssl-dev packages using apk. These packages provide essential
 # build tools and libraries for compiling C code and building Python packages that depend on C extensions.
-RUN apk add --no-cache libffi openssl bash
-
+RUN apk add --no-cache \
+    build-base \
+    libffi-dev \
+    openssl-dev \
+    postgresql-dev \
+    rust \
+    cargo \
+    bash
 # Set work directory
 WORKDIR /web/medicalka_app
 
 # Set environment variables
-ENV PYTHONUNBUFFERED 1
-ENV PYTHONFAULTHANDLER 1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONFAULTHANDLER=1
 
 # Create directory and copy project
 COPY requirements.txt /web/requirements.txt
