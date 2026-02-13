@@ -1,5 +1,7 @@
 # Rest-Framework
+from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, \
     DestroyModelMixin
@@ -33,3 +35,15 @@ class CommentCreateViewSet(
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsAuthorOrReadOnly()]
         return [AllowAny()]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+
+        return Response(
+            {
+                "status": "success",
+                "message": "deleted successfully",
+            },
+            status=status.HTTP_204_NO_CONTENT
+        )

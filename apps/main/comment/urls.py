@@ -16,5 +16,5 @@ comment_detail = CommentCreateViewSet.as_view(
 
 urlpatterns = [
     path('', comment_list_create, name='comment_list_create'),
-    path('<uuid:pk>/', comment_detail, name='comment_detail_update_delete'),
+    path('<uuid:pk>', comment_detail, name='comment_detail_update_delete'),
 ]
