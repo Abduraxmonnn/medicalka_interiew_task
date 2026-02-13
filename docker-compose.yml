@@ -1,45 +1,111 @@
-version: "3.9"
-
 services:
   db:
-    image: postgres:14-alpine
+    image: postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: medicalka_db
       POSTGRES_USER: medicalka_user
       POSTGRES_PASSWORD: medicalka_123
-    ports:
-      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medicalka_user -d medicalka_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    command: sh -c "python manage.py migrate && gunicorn medicalka_app.wsgi:application --bind 0.0.0.0:8000"
-    volumes:
-      - static_volume:/web/medicalka_app/django_static
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3"
     ports:
       - "8000:8000"
+    environment:
+      BACKEND_DB: postgresql_docker
+      POSTGRES_NAME_DOCKER: medicalka_db
+      POSTGRES_USER_DOCKER: medicalka_user
+      POSTGRES_PASSWORD_DOCKER: medicalka_123
+      POSTGRES_HOST_DOCKER: db
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DJANGO_SETTINGS_MODULE: config.settings
     env_file:
       - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   worker:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery -A medicalka_app worker -l info
-    volumes:
-      - static_volume:/web/medicalka_app/django_static
+    restart: unless-stopped
+    command: celery -A config.celery:app worker -l info
+    environment:
+      BACKEND_DB: postgresql_docker
+      POSTGRES_NAME_DOCKER: medicalka_db
+      POSTGRES_USER_DOCKER: medicalka_user
+      POSTGRES_PASSWORD_DOCKER: medicalka_123
+      POSTGRES_HOST_DOCKER: db
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DJANGO_SETTINGS_MODULE: config.settings
     env_file:
       - .env
     depends_on:
-      - db
-      - web
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_started
+
+  beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: celery -A config.celery:app beat -l info
+    environment:
+      BACKEND_DB: postgresql_docker
+      POSTGRES_NAME_DOCKER: medicalka_db
+      POSTGRES_USER_DOCKER: medicalka_user
+      POSTGRES_PASSWORD_DOCKER: medicalka_123
+      POSTGRES_HOST_DOCKER: db
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DJANGO_SETTINGS_MODULE: config.settings
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_started
 
 volumes:
-  static_volume: { }
-  postgres_data: { }
+  postgres_data:
+  redis_data:

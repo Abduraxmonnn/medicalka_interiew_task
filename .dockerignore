@@ -1,0 +1,15 @@
+.git
+.gitignore
+.idea
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+db.sqlite3
+celery_conf/celerybeat-schedule.db
+celery_conf/celery_pids
+media
+static
+.env
