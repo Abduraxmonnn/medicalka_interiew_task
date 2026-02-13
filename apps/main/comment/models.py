@@ -1,11 +1,14 @@
-# Django
+# Python
 import uuid
 
+# Django
+from django.contrib.auth import get_user_model
 from django.db import models
 
 # Project
 from apps.main.post.models import Post
-from apps.user.models import User
+
+User = get_user_model()
 
 
 class Comment(models.Model):

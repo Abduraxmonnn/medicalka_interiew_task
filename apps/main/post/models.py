@@ -1,11 +1,11 @@
 # Django
 import uuid
 
+from django.contrib.auth import get_user_model
 from django.core.validators import MinLengthValidator
 from django.db import models
 
-# Project
-from apps.user.models import User
+User = get_user_model()
 
 
 class Post(models.Model):

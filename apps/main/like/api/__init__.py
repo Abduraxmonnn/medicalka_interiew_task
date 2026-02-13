@@ -1,0 +1,1 @@
+from apps.main.like.api.create import LikeCreateDeleteViewSet
