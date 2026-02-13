@@ -2,6 +2,9 @@ import os
 import sys
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +29,7 @@ THIRD_PART_APPS = [
     'rest_framework',
     'django_filters',
     'rest_framework_simplejwt',
+    'drf_yasg'
 ]
 
 LOCAL_APPS = [
@@ -80,12 +84,34 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DB_SQLITE = "sqlite"
+DB_POSTGRESQL = "postgresql"
+DB_POSTGRESQL_DOCKER = "postgresql_docker"
+
+DATABASES_ALL = {
+    DB_SQLITE: {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    },
+    DB_POSTGRESQL: {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('POSTGRES_NAME', 'tcb_db'),
+        'USER': os.environ.get('POSTGRES_USER', 'tcb_user'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'tcb_12345'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+    },
+    DB_POSTGRESQL_DOCKER: {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('POSTGRES_NAME_DOCKER', 'tcb_db_prod'),
+        'USER': os.environ.get('POSTGRES_USER_DOCKER', 'tcb_user_prod'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD_DOCKER', 'tcb_12345_prod'),
+        'HOST': os.environ.get('POSTGRES_HOST_DOCKER', 'db'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
 }
+
+DATABASES = {"default": DATABASES_ALL[os.environ.get("BACKEND_DB")]}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -161,3 +187,14 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
     'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
 }
+
+REDIS_HOST = '0.0.0.0'
+REDIS_PORT = '6379'
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_BROKER_TRANSPORT_OPTION = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_ACKS_LATE = True
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
